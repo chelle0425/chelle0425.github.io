@@ -13,5 +13,4 @@ My Github Pages repo can be found at:
 https://github.com/chelle0425/chelle0425.github.io/
 
 And, soon, you can see my customized homepage at:
-
 http://chelle0425.github.io/
