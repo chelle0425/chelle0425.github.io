@@ -74,14 +74,56 @@
     header { flex-direction: column-reverse; }
   }
 
-  img.mono-tile {
-    width: 220px;
-    height: 220px;
+  body { isolation: isolate; }
+  #cosmoscope-background {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+  /* 2. A translucent layer in the page colour behind the portfolio content. */
+  .wrap {
+    position: relative;
+    isolation: isolate;
+    text-shadow: 0 0 4px var(--bg), 0 0 8px var(--bg);
+  }
+  .wrap::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -16px -12px;
+    border-radius: 12px;
+    background: var(--bg);
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  .portrait {
+    position: relative;
+    width: min(220px, 100%);
+    height: auto;
+    aspect-ratio: 1;
+    text-shadow: none;
+  }
+  .portrait img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    display: block;
+    border-radius: inherit;
+  }
+
+  @media print {
+    #cosmoscope-background, .wrap::before { display: none; }
+    .wrap { text-shadow: none; }
   }
 
 </style>
+
+<canvas id="cosmoscope-background" aria-hidden="true"></canvas>
 
 <div class="wrap">
   <header>
@@ -96,7 +138,10 @@
       </ul>
       <div id="copy-note" class="sr" aria-live="polite" style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted);"></div>
     </div>
-    <img class="mono-tile" src="./photo.png" alt="This is a photo of me.">
+    <div class="mono-tile portrait">
+      <span aria-hidden="true" hidden>RP</span>
+      <img src="./photo.png" alt="This is a photo of me.">
+    </div>
   </header>
 
   <main class="columns">
@@ -201,6 +246,334 @@
       } catch (e) { fallback(); }
     });
   })();
+</script>
+
+<script>
+  (() => {
+    const photo = document.querySelector('.portrait img');
+    function showInitials() {
+      photo.hidden = true;
+      photo.previousElementSibling.hidden = false;
+    }
+    photo.addEventListener('error', showInitials, { once: true });
+    if (photo.complete && !photo.naturalWidth) showInitials();
+  })();
+</script>
+<script>
+(() => {
+  const canvas = document.getElementById('cosmoscope-background');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  // Aleko Archives geometry: x, y, radius, palette index. No record text is embedded.
+  const palette = [
+    ["#5c5c5c","#82788d"], ["#43ccfa","#159cb8"], ["#d05dfd","#a74ec5"],
+    ["#7373d3","#6859be"], ["#ff6666","#d96269"], ["#aeaeeb","#8b7cc3"],
+    ["#b5875e","#a5724f"], ["#d6ad5c","#b08a3d"], ["#fff799","#b2a040"],
+    ["#fecd49","#c49330"], ["#bdfffe","#54aab4"]
+  ];
+  const geometry = [
+    [1234.0,505.0,7.5,4], [1038.0,890.5,9.5,9], [918.0,801.5,12.5,1], [1210,215,9.1,6],
+    [793.5,900.5,13.0,1], [1599.0,322.0,12.5,3], [1954.0,789.0,6.5,5], [1673.0,766.0,9.5,5],
+    [1856.5,725.0,7.0,6], [886.5,593.0,7.0,0], [1245.5,1013.0,16.5,8], [1649.0,887.0,8.5,6],
+    [799.5,1133.5,7.0,3], [1471.5,477.0,7.5,9], [1031.5,775.0,9.5,0], [721.0,195.5,8.5,4],
+    [1484.0,303.0,6.5,2], [1226.0,749.5,7.0,9], [1993.5,550.5,7.0,5], [860,1300,9.4,3],
+    [1535.5,593.0,10.0,5], [1401.0,383.5,13.5,1], [440,1300,7.6,5], [1136.5,211.5,7.0,2],
+    [1073.5,113.5,7.0,8], [1129.5,1194.0,7.0,8], [1645.0,652.0,8.5,3], [852.5,124.0,7.5,3],
+    [1817.5,615.0,10.5,5], [1624.5,113.5,7.0,3], [661.0,652.5,7.0,3], [1162.0,1330.5,7.0,3],
+    [1539.5,847.5,9.0,2], [479.0,895.5,7.5,3], [1335.0,939.0,13.5,3], [1761.5,917.5,13.0,1],
+    [790,1300,10.2,3], [574.5,561.0,8.0,3], [938.5,203.0,10.0,0], [827.0,244.0,8.5,7],
+    [1758.5,511.5,7.0,3], [1194.5,637.0,9.5,7], [860,1160,10.2,3], [339.5,658.0,7.0,0],
+    [1236.5,1241.5,11.0,3], [1304.0,598.5,8.5,8], [270.5,371.5,7.0,5], [1106.5,351.5,12.0,3],
+    [1013.0,573.5,8.0,3], [1030.0,1025.0,7.5,4], [1278.0,397.0,8.5,8], [1413.5,160.0,11.0,3],
+    [1643.5,535.5,8.0,2], [1804.5,280.5,7.0,6], [670.0,85.0,8.5,9], [829.0,1381.0,8.5,3],
+    [77.5,606.5,7.0,0], [1323.0,266.0,8.5,3], [1008.0,1256.5,7.5,8], [697.5,310.0,9.5,0],
+    [970.5,11.5,7.0,3], [1764.5,1094.5,7.0,5], [480.5,419.0,8.5,3], [339.5,774.5,7.0,9],
+    [1212.0,301.5,8.5,9], [773.0,619.5,7.5,3], [965,1300,9.1,4], [1125.0,543.5,14.0,3],
+    [1080.0,669.0,14.5,2], [1470.5,1037.0,13.0,10], [1910.0,329.0,6.5,4], [1000.5,302.0,7.0,10],
+    [935.0,487.0,13.5,4], [422.5,575.0,7.5,6], [1420.0,581.5,13.0,10], [1314.5,824.5,13.0,10],
+    [1315,1125,8.2,10], [1385,635,8.5,3], [1430.0,808.0,11.5,10], [420,2,7.5,9],
+    [925.0,917.5,7.0,10], [687.0,1103.5,7.0,3], [767.0,786.0,11.5,6], [1491.0,1368.5,7.0,8],
+    [930,1230,10.2,10], [808.5,438.5,17.0,2], [1579.5,1077.0,10.5,1], [790,1230,9.1,3],
+    [597.0,368.0,7.5,10], [1712.0,351.5,9.0,2], [1225.5,899.0,7.5,3], [1353.0,1235.5,7.0,3],
+    [498.0,780.5,7.0,9], [851.0,706.0,7.5,10], [964.5,680.0,10.5,7], [1335.5,710.0,13.5,2],
+    [1149.0,1078.5,7.0,8], [863.5,1231.5,11.0,3], [1047.0,456.5,12.5,6], [1559.5,962.0,7.0,8],
+    [1561.0,733.5,10.0,9], [1349.5,488.5,9.0,1], [1451.0,693.5,16.0,3], [1129.5,964.0,8.5,0]
+  ];
+  // Each connection stores its two node indices and its direction (1, 2, or both).
+  const connections = [
+    [0,100,1], [0,57,1], [0,14,1], [1,2,3], [1,45,1], [1,10,3], [1,67,1], [1,17,1],
+    [1,21,1], [2,78,1], [2,25,1], [2,34,1], [2,72,1], [2,67,3], [3,51,1], [3,60,3],
+    [4,94,3], [4,73,1], [4,72,1], [4,37,3], [4,34,1], [4,78,1], [4,68,1], [5,40,1],
+    [5,78,1], [5,35,1], [5,14,1], [5,24,1], [5,51,1], [5,70,3], [5,7,1], [5,48,3],
+    [5,34,1], [6,18,3], [7,78,1], [7,34,1], [8,35,3], [9,67,3], [10,34,1], [10,102,3],
+    [10,69,3], [10,91,1], [10,76,1], [10,26,3], [10,78,1], [10,21,3], [10,72,1], [10,11,3],
+    [10,58,1], [10,17,3], [10,64,1], [10,100,3], [10,101,1], [11,35,3], [11,90,3], [11,68,1],
+    [12,33,1], [10,12,2], [5,13,2], [7,13,2], [13,67,1], [14,82,1], [15,47,1], [15,37,1],
+    [15,85,1], [15,39,1], [15,72,1], [5,16,2], [16,53,1], [11,16,2], [16,102,1], [16,51,1],
+    [18,28,3], [18,20,3], [20,98,1], [20,94,3], [20,35,3], [6,20,2], [20,85,1], [21,72,1],
+    [3,21,2], [21,26,3], [21,102,3], [4,21,2], [21,51,3], [21,29,1], [21,50,1], [21,34,1],
+    [25,34,1], [25,78,1], [27,85,3], [27,54,3], [27,59,3], [27,68,1], [28,86,1], [20,28,2],
+    [5,28,2], [28,70,1], [23,28,2], [28,53,1], [11,28,2], [28,52,1], [28,32,3], [30,62,1],
+    [4,30,2], [30,68,1], [30,72,1], [5,32,2], [32,82,1], [32,67,1], [32,57,1], [33,67,1],
+    [2,33,2], [20,34,2], [34,101,3], [34,68,3], [34,85,3], [34,78,1], [35,69,3], [10,35,2],
+    [21,35,2], [35,75,1], [35,100,3], [2,35,2], [35,67,1], [35,78,1], [35,99,1], [35,61,3],
+    [36,42,3], [36,55,3], [36,97,3], [19,36,2], [36,87,1], [37,80,1], [37,62,1], [38,85,1],
+    [38,98,3], [20,38,2], [38,94,3], [38,68,1], [38,47,1], [38,59,1], [38,72,3], [39,88,3],
+    [24,39,2], [39,72,3], [39,98,1], [37,39,2], [34,41,2], [41,75,1], [41,98,1], [39,41,2],
+    [41,78,1], [35,41,2], [41,99,1], [41,71,1], [41,47,1], [41,85,1], [14,42,2], [42,55,3],
+    [42,97,1], [19,42,2], [42,87,1], [43,56,1], [14,44,2], [44,69,3], [31,44,2], [44,49,3],
+    [44,84,3], [44,82,1], [34,45,2], [45,78,1], [45,93,3], [45,98,1], [45,50,3], [46,73,1],
+    [46,88,1], [47,85,3], [47,68,3], [3,47,2], [21,47,2], [26,47,2], [37,48,2], [48,75,3],
+    [48,50,1], [4,48,2], [49,72,1], [31,49,2], [49,95,1], [49,58,1], [49,102,1], [50,98,1],
+    [14,51,2], [51,89,3], [29,51,2], [51,102,3], [8,52,2], [52,67,3], [32,52,2], [52,89,3],
+    [54,85,3], [47,54,2], [23,54,2], [55,98,1], [14,55,2], [55,97,1], [19,55,2], [55,87,1],
+    [57,98,1], [52,57,2], [57,67,3], [51,57,2], [57,72,1], [54,59,2], [59,68,1], [23,59,2],
+    [59,82,1], [47,59,2], [60,85,1], [47,60,2], [34,61,2], [61,78,1], [61,99,1], [62,85,3],
+    [54,62,2], [62,68,1], [63,73,1], [62,63,2], [64,85,1], [5,64,2], [13,64,2], [64,101,3],
+    [23,64,2], [51,64,2], [65,68,3], [65,73,1], [19,66,2], [66,87,1], [66,97,1], [31,66,2],
+    [67,94,1], [67,82,3], [67,98,1], [68,90,3], [68,94,3], [68,97,3], [7,68,2], [68,103,1],
+    [68,85,3], [68,102,3], [69,72,1], [69,95,1], [2,69,2], [1,69,2], [21,69,2], [50,69,2],
+    [11,69,2], [31,69,2], [49,69,2], [58,69,2], [69,102,3], [26,69,2], [69,98,1], [72,78,1],
+    [72,101,3], [34,72,2], [47,72,2], [59,72,2], [62,73,2], [74,85,1], [21,74,2], [74,102,1],
+    [4,74,2], [51,74,2], [16,74,2], [5,74,2], [57,74,2], [52,74,2], [74,89,1], [26,74,2],
+    [7,74,2], [40,74,2], [67,74,2], [74,98,1], [32,74,2], [2,74,2], [9,74,2], [8,74,2],
+    [21,75,2], [4,75,2], [75,96,1], [75,97,1], [75,103,1], [75,82,3], [61,75,2], [14,75,2],
+    [44,75,2], [0,75,2], [75,100,1], [57,75,2], [75,102,3], [77,78,1], [35,77,2], [24,77,2],
+    [54,79,2], [33,81,2], [10,81,2], [33,82,2], [81,82,2], [12,82,2], [78,82,2], [72,82,2],
+    [63,82,2], [34,83,2], [19,84,2], [84,87,1], [84,97,1], [66,84,2], [36,84,2], [42,84,2],
+    [55,84,2], [73,85,2], [37,85,2], [85,92,1], [51,85,2], [65,85,2], [59,85,2], [82,85,2],
+    [71,85,2], [23,85,2], [78,86,2], [34,86,2], [25,86,2], [10,86,2], [86,100,3], [75,86,2],
+    [80,86,2], [45,86,2], [83,86,2], [73,88,2], [0,88,2], [24,88,2], [30,88,2], [68,88,2],
+    [5,89,2], [7,89,2], [89,102,3], [26,89,2], [47,90,2], [2,90,2], [76,91,2], [91,96,1],
+    [4,92,2], [93,98,1], [14,93,2], [50,93,2], [93,97,1], [75,94,2], [41,94,2], [85,94,2],
+    [21,95,2], [4,95,2], [95,101,1], [86,95,2], [35,95,2], [2,95,2], [68,95,2], [85,95,2],
+    [95,97,1], [65,95,2], [47,95,2], [78,95,2], [34,95,2], [7,95,2], [90,95,2], [72,95,2],
+    [15,95,2], [44,97,2], [85,97,2], [97,103,3], [19,97,2], [14,98,2], [44,98,2], [82,98,2],
+    [72,98,2], [85,98,2], [65,98,2], [2,100,2], [94,100,2], [67,100,2], [8,100,2], [78,101,2],
+    [23,101,2], [91,102,2], [95,102,2], [96,102,2], [5,102,2], [7,102,2], [31,102,2], [44,102,2],
+    [86,102,2], [101,102,2], [26,102,2], [25,102,2], [72,102,2], [7,103,2], [47,103,2], [78,103,2]
+  ];
+
+  // Choose which grey lines to hide once per page load.
+  const hiddenLineFraction = 1 / 3;
+  const hiddenConnections = new Set(connections
+    .map(connection => ({ connection, order: Math.random() }))
+    .sort((a, b) => a.order - b.order)
+    .slice(0, Math.round(connections.length * hiddenLineFraction))
+    .map(({ connection }) => connection));
+
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const sparkSpeed = 0.92; // 1 is the original speed.
+  const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, strength: 0, lastMove: -Infinity };
+  let frame = 0;
+  let previousTime = 0;
+  let width, height, nodes, lines, circles;
+
+  function resize() {
+    ({ width, height } = canvas.getBoundingClientRect());
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * pixelRatio);
+    canvas.height = Math.round(height * pixelRatio);
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+    // 4. Spread the graph horizontally and shift it left.
+    const fieldWidth = Math.max(width * 1.07, height * 0.84);
+    const fieldHeight = Math.max(height, width * 0.53);
+    const fieldLeft = (width - fieldWidth) / 2 - Math.min(width * 0.04, 64);
+    const radiusScale = Math.min(0.86, Math.max(0.38, width / 1900));
+    lines = new Path2D();
+    circles = palette.map(() => new Path2D());
+    nodes = geometry.map(([x, y, radius, color]) => {
+      // Mirror the graph around its vertical centre before applying its offset.
+      x = (2048 - x) * fieldWidth / 2048 + fieldLeft;
+      y = y * fieldHeight / 1426 + (height - fieldHeight) / 2;
+      const dotInset = radius <= 7.5 ? 0.5 * radiusScale : 0;
+      radius = Math.min(radius, 14.5) * radiusScale; // 1. Cap the largest nodes.
+      const dotRadius = radius - dotInset;
+      circles[color].moveTo(x + dotRadius, y);
+      circles[color].arc(x, y, dotRadius, 0, Math.PI * 2);
+      return { x, y, radius, color: palette[color][1], neighbors: [] };
+    });
+
+    for (const connection of connections) {
+      const [from, to] = connection;
+      const a = nodes[from];
+      const b = nodes[to];
+      const distance = Math.hypot(b.x - a.x, b.y - a.y);
+      if (distance > 44 && distance < 260) {
+        if (isVisible(b)) a.neighbors.push({ node: b, distance });
+        if (isVisible(a)) b.neighbors.push({ node: a, distance });
+      }
+
+      // Sample the static lines after recording the routes for the sparks.
+      if (hiddenConnections.has(connection) || distance < a.radius + b.radius + 7) continue;
+      const dx = (b.x - a.x) / distance;
+      const dy = (b.y - a.y) / distance;
+      lines.moveTo(a.x + dx * (a.radius + 1.2), a.y + dy * (a.radius + 1.2));
+      lines.lineTo(b.x - dx * (b.radius + 1.2), b.y - dy * (b.radius + 1.2));
+    }
+    for (const node of nodes) {
+      node.neighbors.sort((a, b) => a.distance - b.distance);
+    }
+    drawGraph();
+  }
+
+  function isVisible({ x, y }) {
+    return x >= 0 && x <= width && y >= 0 && y <= height;
+  }
+
+  function drawGraph() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = 'rgba(89, 79, 101, 0.19)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke(lines);
+    ctx.globalAlpha = width < 600 ? 0.45 : 0.59;
+    circles.forEach((path, i) => {
+      ctx.fillStyle = palette[i][0];
+      ctx.fill(path);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function halo(x, y, radius, color, opacity) {
+    const light = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    light.addColorStop(0, color);
+    light.addColorStop(1, color + '00');
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = light;
+    ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+  }
+
+  function spark(from, to, phase, opacity) {
+    const progress = phase % 1;
+    const tail = Math.max(0, progress - 0.17);
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const x = from.x + dx * progress;
+    const y = from.y + dy * progress;
+    const color = to.color;
+    const brightness = Math.sin(Math.PI * progress) * opacity;
+    const streak = ctx.createLinearGradient(from.x + dx * tail, from.y + dy * tail, x, y);
+    streak.addColorStop(0, color + '00');
+    streak.addColorStop(1, color);
+    ctx.globalAlpha = brightness;
+    ctx.strokeStyle = streak;
+    ctx.lineWidth = 1.65;
+    ctx.beginPath();
+    ctx.moveTo(from.x + dx * tail, from.y + dy * tail);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    halo(x, y, 9, color, brightness * 0.48);
+    ctx.globalAlpha = brightness;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, 2.1, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawSparks(time) {
+    const reach = Math.max(115, Math.min(206, Math.min(width, height) * 0.23));
+    const nearby = nodes
+      .filter(isVisible)
+      .map(node => ({ node, distance: Math.hypot(node.x - pointer.x, node.y - pointer.y) }))
+      .filter(({ distance }) => distance < reach)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 3);
+
+    nearby.forEach(({ node, distance }, i) => {
+      const intensity = pointer.strength * (1 - Math.pow(distance / reach, 2));
+      ctx.strokeStyle = node.color;
+      ctx.globalAlpha = intensity * 0.48;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pointer.x, pointer.y);
+      ctx.lineTo(node.x, node.y);
+      ctx.stroke();
+      halo(node.x, node.y, node.radius + 11, node.color, intensity * 0.32);
+      ctx.globalAlpha = intensity * 0.78;
+      ctx.strokeStyle = node.color;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius + 2.1, 0, Math.PI * 2);
+      ctx.stroke();
+      spark(pointer, node, time / 780 + i * 0.36, intensity);
+    });
+
+    const hub = nearby[0]?.node;
+    if (hub) {
+      hub.neighbors.slice(0, 2).forEach(({ node }, i) => {
+        spark(hub, node, time / 1060 + i * 0.47, pointer.strength * 0.77);
+      });
+    }
+
+    const { x, y, strength } = pointer;
+    const color = '#7463c9';
+    halo(x, y, 24, color, strength * 0.38);
+    const size = 5.5 + Math.sin(time / 120) * 0.8;
+    ctx.globalAlpha = strength * 0.9;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y - size);
+    ctx.quadraticCurveTo(x + 0.8, y - 0.8, x + size, y);
+    ctx.quadraticCurveTo(x + 0.8, y + 0.8, x, y + size);
+    ctx.quadraticCurveTo(x - 0.8, y + 0.8, x - size, y);
+    ctx.quadraticCurveTo(x - 0.8, y - 0.8, x, y - size);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function queueFrame() {
+    if (!frame) frame = window.requestAnimationFrame(render);
+  }
+
+  function render(time) {
+    frame = 0;
+    drawGraph();
+    if (motion.matches) return;
+
+    const delta = Math.min(50, time - previousTime);
+    previousTime = time;
+    const following = 1 - Math.exp(-(delta / 42) * sparkSpeed);
+    const active = time - pointer.lastMove < 3200;
+    pointer.x += (pointer.targetX - pointer.x) * following;
+    pointer.y += (pointer.targetY - pointer.y) * following;
+    pointer.strength += (Number(active) - pointer.strength) * (1 - Math.exp(-delta / 135));
+    if (!active && pointer.strength < 0.01) {
+      pointer.strength = 0;
+      return;
+    }
+    drawSparks(time * sparkSpeed);
+    queueFrame();
+  }
+
+  function clearPointer() {
+    pointer.lastMove = -Infinity;
+  }
+
+  window.addEventListener('pointermove', event => {
+    if (motion.matches || event.pointerType === 'touch') return;
+    if (!pointer.strength) {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+    }
+    pointer.targetX = event.clientX;
+    pointer.targetY = event.clientY;
+    pointer.lastMove = performance.now();
+    queueFrame();
+  }, { passive: true });
+  window.addEventListener('pointerout', event => {
+    if (!event.relatedTarget) clearPointer();
+  }, { passive: true });
+  window.addEventListener('blur', clearPointer);
+  motion.addEventListener('change', () => {
+    clearPointer();
+    pointer.strength = 0;
+    drawGraph();
+  });
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+})();
 </script>
 
 </body></html>
