@@ -9,10 +9,10 @@
   :root {
     color-scheme: light;
     --bg: #faf9f6;
-    --fg: #202522;
-    --muted: #656b66;
-    --line: #dcded7;
-    --accent: #32634c;
+    --fg: #252320;
+    --muted: #6b6965;
+    --line: #deded7;
+    --accent: #725014;
     --tile: #efeee7;
     --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -28,7 +28,7 @@
     padding-right: max(16px, env(safe-area-inset-right, 0px));
     padding-block: 56px 40px;
   }
-  .wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+  .wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
 
   a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; text-decoration-thickness: 1px; }
   a:hover { color: var(--accent); text-decoration-color: var(--accent); }
@@ -52,6 +52,7 @@
     border: 1px solid var(--line);
   }
 
+
   .columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 48px 40px; }
   section { min-width: 0; }
   h2 {
@@ -74,11 +75,12 @@
   }
 
   img.mono-tile {
-    width: 160px;
-    height: 160px;
+    width: 220px;
+    height: 220px;
     object-fit: cover;
     display: block;
   }
+
 </style>
 
 <div class="wrap">
