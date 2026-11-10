@@ -417,7 +417,7 @@
         x = (2048 - x) * fieldWidth / 2048 + fieldLeft + (width >= 700 ? 184 : 0);
         y = y * fieldHeight / 1426 + fieldTop;
         const dotInset = radius <= 7.5 ? 0.5 * radiusScale : 0;
-        radius = Math.min(radius, 14.5) * radiusScale; // 1. Cap the largest nodes.
+        radius = Math.min(radius, 14) * radiusScale; // 1. Cap the largest nodes.
         const dotRadius = radius - dotInset;
         circles[color].moveTo(x + dotRadius, y);
         circles[color].arc(x, y, dotRadius, 0, Math.PI * 2);
@@ -502,7 +502,15 @@
       ctx.arc(x, y, 2.1, 0, Math.PI * 2);
       ctx.fill();
     }
-  
+    function drawHoverLine(from, to, opacity) {
+      ctx.strokeStyle = to.color;
+      ctx.globalAlpha = opacity;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+    }
     function drawSparks(time) {
       const reach = Math.max(115, Math.min(206, Math.min(width, height) * 0.23));
       const nearby = nodes
@@ -534,21 +542,33 @@
       if (hub) {
         hub.neighbors.slice(0, 2).forEach(({ node }, i) => {
           spark(hub, node, time / 1060 + i * 0.47, pointer.strength * 0.77);
+          drawHoverLine(hub, node, pointer.strength * 0.38);
         });
       }
   
+      // const { x, y, strength } = pointer;
+      // const color = '#7463c9';
+      // halo(x, y, 24, color, strength * 0.38);
+      // const size = 5.5 + Math.sin(time / 120) * 0.8;
+      // ctx.globalAlpha = strength * 0.9;
+      // ctx.fillStyle = color;
+      // ctx.beginPath();
+      // ctx.moveTo(x, y - size);
+      // ctx.quadraticCurveTo(x + 0.8, y - 0.8, x + size, y);
+      // ctx.quadraticCurveTo(x + 0.8, y + 0.8, x, y + size);
+      // ctx.quadraticCurveTo(x - 0.8, y + 0.8, x - size, y);
+      // ctx.quadraticCurveTo(x - 0.8, y - 0.8, x, y - size);
+      // ctx.fill();
+      // ctx.globalAlpha = 1;
       const { x, y, strength } = pointer;
-      const color = '#7463c9';
-      halo(x, y, 24, color, strength * 0.38);
-      const size = 5.5 + Math.sin(time / 120) * 0.8;
+      const color = '#828282';
+      halo(x, y, 20, color, strength * 0.32);
+
+      const radius = 2.5 + Math.sin(time / 120) * 0.5;
       ctx.globalAlpha = strength * 0.9;
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.moveTo(x, y - size);
-      ctx.quadraticCurveTo(x + 0.8, y - 0.8, x + size, y);
-      ctx.quadraticCurveTo(x + 0.8, y + 0.8, x, y + size);
-      ctx.quadraticCurveTo(x - 0.8, y + 0.8, x - size, y);
-      ctx.quadraticCurveTo(x - 0.8, y - 0.8, x, y - size);
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
