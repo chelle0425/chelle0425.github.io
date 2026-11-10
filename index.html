@@ -107,7 +107,9 @@
       opacity: 0.2;
       pointer-events: none;
     }
-  
+    #cosmoscope-background[hidden] ~ .wrap { text-shadow: none; }
+    #cosmoscope-background[hidden] ~ .wrap::before { display: none; }
+
     .portrait {
       position: relative;
       width: min(220px, 100%);
@@ -125,7 +127,7 @@
     }
   
     @media print {
-      #cosmoscope-background, .wrap::before { display: none; }
+      #cosmoscope-background, #background-control, .wrap::before { display: none; }
       .wrap { text-shadow: none; }
     }
 
@@ -144,6 +146,9 @@
           <!-- <li><a href="tel:+447864750191">Phone</a></li> -->
           <!-- <li><a href="https://github.com/chelle0425" target="_blank" rel="noopener">GitHub</a></li> -->
           <li><a href="https://chelle0425.github.io/cv/" target="_blank" rel="noopener">Résumé</a></li>
+          <li id="background-control" hidden>
+            <button type="button" aria-controls="cosmoscope-background">Hide background</button>
+          </li>
         </ul>
         <div id="copy-note" class="sr" aria-live="polite" style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted);"></div>
       </div>
@@ -380,6 +385,7 @@
     let width, height, nodes, lines, circles;
   
     function resize() {
+      if (canvas.hidden) return;
       ({ width, height } = canvas.getBoundingClientRect());
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * pixelRatio);
@@ -613,7 +619,7 @@
     }
   
     window.addEventListener('pointermove', event => {
-      if (motion.matches || event.pointerType === 'touch') return;
+      if (canvas.hidden || motion.matches || event.pointerType === 'touch') return;
       if (!pointer.strength) {
         pointer.x = event.clientX;
         pointer.y = event.clientY;
@@ -630,10 +636,29 @@
     motion.addEventListener('change', () => {
       clearPointer();
       pointer.strength = 0;
-      drawGraph();
+      if (!canvas.hidden) drawGraph();
     });
     window.addEventListener('resize', resize, { passive: true });
     resize();
+
+    const backgroundControl = document.getElementById('background-control');
+    const backgroundButton = backgroundControl.querySelector('button');
+
+    backgroundButton.addEventListener('click', () => {
+      canvas.hidden = !canvas.hidden;
+      backgroundButton.textContent = canvas.hidden ? 'Show background' : 'Hide background';
+
+      if (canvas.hidden) {
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+        clearPointer();
+        pointer.strength = 0;
+      } else {
+        resize();
+      }
+    });
+
+    backgroundControl.hidden = false;
   })();
   </script>
   
