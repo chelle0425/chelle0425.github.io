@@ -140,9 +140,27 @@
       .wrap { text-shadow: none; }
     }
 
+    #topic-label {
+      position: fixed;
+      z-index: 1;
+      pointer-events: none;
+      width: max-content;
+      max-width: min(20rem, calc(100vw - 16px));
+      box-sizing: border-box;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--fg);
+      font: 0.875rem/1.4 var(--font-mono);
+      overflow-wrap: anywhere;
+    }
+
+    @media print { #topic-label { display: none; } }
   </style>
   
   <canvas id="cosmoscope-background" aria-hidden="true" hidden></canvas>
+  <div id="topic-label" hidden></div>
 
   <div class="links" id="background-view-control" hidden></div>
 
@@ -270,7 +288,7 @@
       });
     })();
   </script>
-  
+  <script src="./background-data.js"></script>
   <script>
     (() => {
       const photo = document.querySelector('.portrait img');
@@ -294,6 +312,113 @@
       ["#7373d3","#6859be"], ["#ff6666","#d96269"], ["#aeaeeb","#8b7cc3"],
       ["#b5875e","#a5724f"], ["#d6ad5c","#b08a3d"], ["#fff799","#b2a040"],
       ["#fecd49","#c49330"], ["#bdfffe","#54aab4"]
+    ];
+
+    const topics = [
+    /*   0 */ "Precision, Recall and the Confusion Matrix",
+    /*   1 */ "Grid search",
+    /*   2 */ "SVM",
+    /*   3 */ "Text Classification with Bag-of-Words and TF-IDF",
+    /*   4 */ "Decision trees",
+    /*   5 */ "Policy Gradient Methods: From REINFORCE to PPO",
+    /*   6 */ "Monte Carlo Methods in Reinforcement Learning",
+    /*   7 */ "Actor-Critic Methods Explained",
+    /*   8 */ "Data augmentation",
+    /*   9 */ "Bootstrapping",
+    /*  10 */ "Hyperparameter tuning",
+    /*  11 */ "Data augmentation (images)",
+    /*  12 */ "Regression",
+    /*  13 */ "Implementing REINFORCE in PyTorch",
+    /*  14 */ "Eigenvalues",
+    /*  15 */ "Log Loss and Cross-Entropy for Classification",
+    /*  16 */ "Function Approximation in Reinforcement Learning",
+    /*  17 */ "Optuna",
+    /*  18 */ "Temporal-Difference Learning",
+    /*  19 */ "Cointegration and Pairs Trading",
+    /*  20 */ "Markov Decision Processes and the Bellman Equation",
+    /*  21 */ "Transformers and Self-Attention",
+    /*  22 */ "Multi-Armed Bandits and A/B Testing",
+    /*  23 */ "Convexity and Loss Landscapes",
+    /*  24 */ "Posterior Predictive Checks",
+    /*  25 */ "Debugging Neural Networks: A Practical Checklist",
+    /*  26 */ "Softmax Temperature and Probability Calibration",
+    /*  27 */ "Ordinary Least Squares:",
+    /*  28 */ "Q-Learning and Deep Q-Networks",
+    /*  29 */ "Sentence Embeddings and Semantic Search",
+    /*  30 */ "Gini Impurity vs Entropy: How Trees Split",
+    /*  31 */ "Walk-Forward Validation for Time Series",
+    /*  32 */ "On-Policy vs Off-Policy Learning",
+    /*  33 */ "Polynomial regression",
+    /*  34 */ "Backpropagation",
+    /*  35 */ "CNNs",
+    /*  36 */ "State-Space Models and the Kalman Filter",
+    /*  37 */ "Generative vs Discriminative Classifiers",
+    /*  38 */ "Maximum Likelihood Estimation",
+    /*  39 */ "Variational Inference and the ELBO",
+    /*  40 */ "Baselines and Variance Reduction in Policy Gradients",
+    /*  41 */ "Bayesian Inference: Priors, Likelihoods and Posteriors",
+    /*  42 */ "Stationarity, Autocorrelation and Unit Root Tests",
+    /*  43 */ "Brownian Motion from First Principles",
+    /*  44 */ "Neural Networks for Time Series Forecasting",
+    /*  45 */ "Visualising High-Dimensional Data with t-SNE and UMAP",
+    /*  46 */ "Monte Carlo Tree Search",
+    /*  47 */ "Logistic Regression and the Road to Classification",
+    /*  48 */ "Random forests and bagging",
+    /*  49 */ "Learning Curves: Diagnosing Over- and Underfitting",
+    /*  50 */ "Feature importance",
+    /*  51 */ "Word Embeddings: Word2Vec and GloVe",
+    /*  52 */ "The Credit Assignment Problem",
+    /*  53 */ "Experience Replay Buffers",
+    /*  54 */ "Linear regression",
+    /*  55 */ "Volatility Modelling with GARCH",
+    /*  56 */ "Itô's Lemma and Stochastic Calculus Intuition",
+    /*  57 */ "Imbalanced Classification and Resampling",
+    /*  58 */ "Experiment Tracking with MLflow",
+    /*  59 */ "Probability Distributions Every ML Engineer Should Know",
+    /*  60 */ "Softmax Regression and Multiclass Classification",
+    /*  61 */ "Playing Atari with Deep RL",
+    /*  62 */ "Dimensionality",
+    /*  63 */ "KNN",
+    /*  64 */ "Training an Agent in Gymnasium",
+    /*  65 */ "Ridge and Lasso regression",
+    /*  66 */ "Metrics: MAPE, MASE and sMAPE",
+    /*  67 */ "Cross-Validation",
+    /*  68 */ "Bias-variance",
+    /*  69 */ "Dropout and Stochastic Regularisation",
+    /*  70 */ "Reward Shaping and Reward Design",
+    /*  71 */ "Conjugate Priors Cheat Sheet",
+    /*  72 */ "Loss functions",
+    /*  73 */ "Encoding categorical variables",
+    /*  74 */ "Normalisation Layers: BatchNorm and LayerNorm",
+    /*  75 */ "Weight Initialisation: Xavier and He",
+    /*  76 */ "Learning Rate Schedules and Warm-up",
+    /*  77 */ "Convolution Arithmetic: Padding, Stride and Pooling",
+    /*  78 */ "Activation functions",
+    /*  79 */ "ML environment setup",
+    /*  80 */ "Reconstruction Loss vs KL Term: The VAE Trade-off",
+    /*  81 */ "Generalised Linear Models",
+    /*  82 */ "Data cleaning and imputation",
+    /*  83 */ "Mixed-Precision Training and GPU Tips",
+    /*  84 */ "Differencing, Detrending and Seasonal Decomposition",
+    /*  85 */ "Gradient descent and the Optimisation Landscape",
+    /*  86 */ "Autoencoders",
+    /*  87 */ "Hidden Markov Models for Regime Detection",
+    /*  88 */ "Importance Sampling and Monte Carlo Estimation",
+    /*  89 */ "Exploration vs Exploitation",
+    /*  90 */ "Soft-Margin SVMs and the C Parameter",
+    /*  91 */ "Adam, RMSProp and Adaptive Optimisers",
+    /*  92 */ "Decision trees",
+    /*  93 */ "PCA for Dimensionality Reduction",
+    /*  94 */ "MCMC",
+    /*  95 */ "L1 L2 Regularisation",
+    /*  96 */ "Gradient Clipping and Exploding Gradients",
+    /*  97 */ "ARIMA",
+    /*  98 */ "Feature engineering",
+    /*  99 */ "Training Stability Tricks for Atari Agents",
+    /* 100 */ "CNN for image classification",
+    /* 101 */ "Gradient boosting",
+    /* 102 */ "Neural Networks from Scratch: The Multilayer Perceptron",
+    /* 103 */ "Information Theory: Entropy and KL Divergence"
     ];
     const geometry = [
       [1234.0,505.0,7.5,4], [1038.0,890.5,9.5,9], [918.0,801.5,12.5,1], [1210,215,9.1,6],
@@ -444,7 +569,7 @@
         const dotRadius = radius - dotInset;
         circles[color].moveTo(x + dotRadius, y);
         circles[color].arc(x, y, dotRadius, 0, Math.PI * 2);
-        return { x, y, radius, color: palette[color][1], neighbors: [] };
+        return { x, y, radius, dotRadius, color: palette[color][1], neighbors: [] };
       });
       
       // 3. Draw plain lines between the node indices.
@@ -686,6 +811,52 @@
       }
     });
     viewButton.hidden = false;
+    const topicLabel = document.getElementById('topic-label');
+
+    function hideTopicLabel() {
+      topicLabel.hidden = true;
+    }
+
+    window.addEventListener('pointermove', event => {
+      const backgroundOnly = foreground.hidden && !canvas.hidden;
+      if (!backgroundOnly || event.pointerType === 'touch' || event.target === viewButton) {
+        hideTopicLabel();
+        return;
+      }
+
+      const { clientX, clientY } = event;
+      let title = '';
+      let closestDistance = Infinity;
+
+      nodes.forEach((node, index) => {
+        const distance = Math.hypot(clientX - node.x, clientY - node.y);
+        if (distance <= node.dotRadius && distance < closestDistance) {
+          closestDistance = distance;
+          title = topics[index];
+        }
+      });
+
+      if (!title) {
+        hideTopicLabel();
+        return;
+      }
+
+      topicLabel.textContent = title;
+      topicLabel.hidden = false;
+
+      const padding = 8;
+      const left = Math.max(padding, Math.min(clientX + 12, width - topicLabel.offsetWidth - padding));
+      const top = Math.max(padding, Math.min(clientY + 12, height - topicLabel.offsetHeight - padding));
+      topicLabel.style.left = `${left}px`;
+      topicLabel.style.top = `${top}px`;
+    }, { passive: true });
+
+    window.addEventListener('pointerout', event => {
+      if (!event.relatedTarget) hideTopicLabel();
+    }, { passive: true });
+    window.addEventListener('blur', hideTopicLabel);
+    window.addEventListener('resize', hideTopicLabel);
+    viewButton.addEventListener('click', hideTopicLabel);
   })();
   </script>
   
