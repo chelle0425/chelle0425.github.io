@@ -9,12 +9,18 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #ffffff;
+      /* --bg: #ffffff;
       --fg: #272727;
       --muted: #444343;
       --line: #bbbbbb;
       --accent: #6b6b6b;
-      --tile: #eeeeee;
+      --tile: #eeeeee; */
+      --bg: #faf9f6;
+      --fg: #252320;
+      --muted: #6b6965;
+      --line: #deded7;
+      --accent: #725014;
+      --tile: #efeee7;
       --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
       --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     }
@@ -127,15 +133,38 @@
     }
   
     @media print {
-      #cosmoscope-background, #background-control, .wrap::before { display: none; }
+      #cosmoscope-background, #view-control, .wrap::before { display: none; }
+      #foreground[hidden] { display: flex !important; }
       .wrap { text-shadow: none; }
     }
 
+    #view-control {
+      display: flex;
+      justify-content: flex-end;
+      max-width: 1080px;
+      margin: 0 auto 12px;
+    }
+
+    #view-control button {
+      font: 0.875rem/1.4 var(--font-mono);
+      color: var(--fg);
+      background: var(--bg);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    #view-control button:hover { background: var(--tile); }
   </style>
   
-  <canvas id="cosmoscope-background" aria-hidden="true"></canvas>
-  
-  <div class="wrap">
+  <canvas id="cosmoscope-background" aria-hidden="true" hidden></canvas>
+
+  <div id="view-control" hidden>
+    <button type="button" aria-controls="cosmoscope-background foreground">Show background</button>
+  </div>
+
+  <div class="wrap" id="foreground">
     <header>
       <div class="intro">
         <h1>Rochelle Pun</h1>
@@ -146,7 +175,6 @@
           <!-- <li><a href="tel:+447864750191">Phone</a></li> -->
           <!-- <li><a href="https://github.com/chelle0425" target="_blank" rel="noopener">GitHub</a></li> -->
           <li><a href="https://chelle0425.github.io/cv/" target="_blank" rel="noopener">Résumé</a></li>
-          <li id="background-control" hidden>
             <button type="button" aria-controls="cosmoscope-background">Hide background</button>
           </li>
         </ul>
@@ -279,7 +307,7 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
   
-    // Aleko Archives geometry: x, y, radius, palette index. No record text is embedded.
+    // Geometry: x, y, radius, palette index.
     const palette = [
       ["#5c5c5c","#82788d"], ["#43ccfa","#159cb8"], ["#d05dfd","#a74ec5"],
       ["#7373d3","#6859be"], ["#ff6666","#d96269"], ["#aeaeeb","#8b7cc3"],
@@ -639,26 +667,35 @@
       if (!canvas.hidden) drawGraph();
     });
     window.addEventListener('resize', resize, { passive: true });
-    resize();
+ 
+    const foreground = document.getElementById('foreground');
+    const viewControl = document.getElementById('view-control');
+    const viewButton = viewControl.querySelector('button');
+    const views = [
+      { label: 'Show background', backgroundVisible: false, foregroundVisible: true },
+      { label: 'Hide foreground', backgroundVisible: true, foregroundVisible: true },
+      { label: 'Show foreground', backgroundVisible: true, foregroundVisible: false },
+      { label: 'Hide background', backgroundVisible: true, foregroundVisible: true }
+    ];
+    let viewIndex = 0;
 
-    const backgroundControl = document.getElementById('background-control');
-    const backgroundButton = backgroundControl.querySelector('button');
+    viewButton.addEventListener('click', () => {
+      viewIndex = (viewIndex + 1) % views.length;
+      const view = views[viewIndex];
+      canvas.hidden = !view.backgroundVisible;
+      foreground.hidden = !view.foregroundVisible;
+      viewButton.textContent = view.label;
 
-    backgroundButton.addEventListener('click', () => {
-      canvas.hidden = !canvas.hidden;
-      backgroundButton.textContent = canvas.hidden ? 'Show background' : 'Hide background';
-
-      if (canvas.hidden) {
+      if (view.backgroundVisible) {
+        resize();
+      } else {
         window.cancelAnimationFrame(frame);
         frame = 0;
         clearPointer();
         pointer.strength = 0;
-      } else {
-        resize();
       }
     });
-
-    backgroundControl.hidden = false;
+    viewControl.hidden = false;
   })();
   </script>
   
