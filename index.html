@@ -153,7 +153,7 @@
           <!-- <li><a href="https://github.com/chelle0425" target="_blank" rel="noopener">GitHub</a></li> -->
           <li><a href="https://chelle0425.github.io/cv/" target="_blank" rel="noopener">Résumé</a></li>
           <li id="background-control" hidden>
-            <button type="button" aria-controls="cosmoscope-background">Show background</button>
+            <button type="button" aria-controls="cosmoscope-background">Show backdrop</button>
           </li>
         </ul>
         <div id="copy-note" class="sr" aria-live="polite" style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted);"></div>
@@ -652,7 +652,7 @@
 
     backgroundButton.addEventListener('click', () => {
       canvas.hidden = !canvas.hidden;
-      backgroundButton.textContent = canvas.hidden ? 'Show background' : 'Hide background';
+      backgroundButton.textContent = canvas.hidden ? 'Show backdrop' : 'Hide backdrop';
 
       if (canvas.hidden) {
         window.cancelAnimationFrame(frame);
