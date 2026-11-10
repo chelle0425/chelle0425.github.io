@@ -17,7 +17,7 @@
       --tile: #eeeeee; */
       --bg: #faf9f6;
       --fg: #252320;
-      --muted: #6b6965;
+      --muted: #605e5b;
       --line: #deded7;
       --accent: #725014;
       --tile: #efeee7;
@@ -58,7 +58,9 @@
       text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; text-decoration-thickness: 1px;
     }
     .links button:hover { color: var(--accent); text-decoration-color: var(--accent); }
-  
+    .resume-links { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 22px; }
+    #background-view-control { max-width: 1080px; margin-inline: auto; }
+    
     .mono-tile {
       width: 132px; height: 132px; flex: none; border-radius: 4px; background: var(--tile);
       display: grid; place-items: center; font-family: var(--font-mono); font-size: 2.25rem; font-weight: 500; color: var(--muted);
@@ -138,31 +140,11 @@
       .wrap { text-shadow: none; }
     }
 
-    #view-control {
-      display: flex;
-      justify-content: flex-end;
-      max-width: 1080px;
-      margin: 0 auto 12px;
-    }
-
-    #view-control button {
-      font: 0.875rem/1.4 var(--font-mono);
-      color: var(--fg);
-      background: var(--bg);
-      border: 1px solid var(--accent);
-      border-radius: 4px;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-
-    #view-control button:hover { background: var(--tile); }
   </style>
   
   <canvas id="cosmoscope-background" aria-hidden="true" hidden></canvas>
 
-  <div id="view-control" hidden>
-    <button type="button" aria-controls="cosmoscope-background foreground">Show background</button>
-  </div>
+  <div class="links" id="background-view-control" hidden></div>
 
   <div class="wrap" id="foreground">
     <header>
@@ -175,8 +157,7 @@
           <!-- <li><a href="tel:+447864750191">Phone</a></li> -->
           <!-- <li><a href="https://github.com/chelle0425" target="_blank" rel="noopener">GitHub</a></li> -->
           <li><a href="https://chelle0425.github.io/cv/" target="_blank" rel="noopener">Résumé</a></li>
-            <button type="button" aria-controls="cosmoscope-background">Hide background</button>
-          </li>
+          <li><button type="button" id="view-control" aria-controls="cosmoscope-background foreground" hidden>Show background</button></li>
         </ul>
         <div id="copy-note" class="sr" aria-live="polite" style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted);"></div>
       </div>
@@ -669,8 +650,9 @@
     window.addEventListener('resize', resize, { passive: true });
  
     const foreground = document.getElementById('foreground');
-    const viewControl = document.getElementById('view-control');
-    const viewButton = viewControl.querySelector('button');
+    const viewButton = document.getElementById('view-control');
+    const resumeLinks = viewButton.parentElement;
+    const backgroundViewControl = document.getElementById('background-view-control');
     const views = [
       { label: 'Show background', backgroundVisible: false, foregroundVisible: true },
       { label: 'Hide foreground', backgroundVisible: true, foregroundVisible: true },
@@ -680,11 +662,19 @@
     let viewIndex = 0;
 
     viewButton.addEventListener('click', () => {
+      const buttonHadFocus = document.activeElement === viewButton;
       viewIndex = (viewIndex + 1) % views.length;
       const view = views[viewIndex];
       canvas.hidden = !view.backgroundVisible;
       foreground.hidden = !view.foregroundVisible;
       viewButton.textContent = view.label;
+
+      backgroundViewControl.hidden = view.foregroundVisible;
+      const buttonContainer = view.foregroundVisible ? resumeLinks : backgroundViewControl;
+      if (viewButton.parentElement !== buttonContainer) {
+        buttonContainer.append(viewButton);
+        if (buttonHadFocus) viewButton.focus();
+      }
 
       if (view.backgroundVisible) {
         resize();
@@ -695,7 +685,7 @@
         pointer.strength = 0;
       }
     });
-    viewControl.hidden = false;
+    viewButton.hidden = false;
   })();
   </script>
   
