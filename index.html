@@ -1,11 +1,12 @@
 <!doctype html><html lang="en" data-theme="light"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f6;color:#202522}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
   <title>Rochelle Pun</title>
-  <meta name="claude:viewport-fit-sides" content="cover">
+
+  <!-- fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  
   <style>
-    /* Layout: quiet header (name, one-line bio, links, monogram) over three equal columns: Education, Experience, Open source. */
     :root {
       color-scheme: light;
       --bg: #ffffff;
@@ -30,10 +31,16 @@
     }
     .wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
   
-    a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    /* a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; text-decoration-thickness: 1px; } */
+    a { color: inherit}
     a:hover { color: var(--accent); text-decoration-color: var(--accent); }
     a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+    
+    b { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; text-decoration-thickness: 1px; } 
+    b:hover { color: var(--accent); text-decoration-color: var(--accent); }
+    b:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
   
+
     header { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
     .intro { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
     h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.05; font-weight: 600; letter-spacing: -0.035em; margin: 0; text-wrap: balance; }
@@ -62,9 +69,10 @@
     ul.entries { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
     .entry { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .entry .title { font-weight: 500; overflow-wrap: anywhere; }
+    .entry .title:not([href]):hover { color: inherit; }
     .entry .org, .entry .desc { color: var(--muted); font-size: 0.9375rem; text-wrap: pretty; }
     .entry .when { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 2px; }
-  
+    
     footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding-top: 20px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
     #copy-note { min-height: 1em; }
   
@@ -120,7 +128,7 @@
       #cosmoscope-background, .wrap::before { display: none; }
       .wrap { text-shadow: none; }
     }
-  
+
   </style>
   
   <canvas id="cosmoscope-background" aria-hidden="true"></canvas>
@@ -150,17 +158,17 @@
         <h2 id="h-edu">Education</h2>
         <ul class="entries">
           <li class="entry">
-            <a class="title" href="https://www.imperial.ac.uk/" target="_blank" rel="noopener">MSc Geo-Energy with Machine Learning & Data Science</a>
+            <b class="title">MSc Geo-Energy with Machine Learning & Data Science</b>
             <span class="org">Imperial College London</span>
             <span class="when">2024 – 2025</span>
           </li>
           <li class="entry">
-            <a class="title" href="https://www.imperial.ac.uk/" target="_blank" rel="noopener">BSc Geophysics</a>
+            <b class="title">BSc Geophysics</b>
             <span class="org">Imperial College London</span>
             <span class="when">2021 – 2024</span>
           </li>
           <li class="entry">
-            <a class="title" href="https://island.esf.edu.hk/en/" target="_blank" rel="noopener">International Baccalaureate Diploma Programme</a>
+            <a class="title">International Baccalaureate Diploma Programme</a>
             <span class="org">Island School, Hong Kong</span>
             <span class="when">2019 - 2021</span>
           </li>
@@ -171,22 +179,22 @@
         <h2 id="h-exp">Experience</h2>
         <ul class="entries">
           <li class="entry">
-            <a class="title" href="https://totalenergies.com/" target="_blank" rel="noopener">Data Scientist</a>
+            <a class="title">Data Scientist</a>
             <span class="org">TotalEnergies</span>
             <span class="when">2025</span>
           </li>
           <li class="entry">
-            <a class="title" href="https://www.leeds.ac.uk/" target="_blank" rel="noopener">Research Intern</a>
+            <a class="title">Research Intern</a>
             <span class="org">University of Leeds</span>
             <span class="when">2024</span>
           </li>
           <li class="entry">
-            <a class="title" href="https://www.imperial.ac.uk/" target="_blank" rel="noopener">Research Assistant</a>
+            <a class="title" >Research Assistant</a>
             <span class="org">Imperial College London</span>
             <span class="when">2024</span>
           </li>
           <li class="entry">
-            <a class="title" href="https://www.imperial.ac.uk/" target="_blank" rel="noopener">Research Assistant</a>
+            <a class="title">Research Assistant</a>
             <span class="org">Imperial College London, with SAND Geophysics and Geoteric</span>
             <span class="when">2023</span>
           </li>
