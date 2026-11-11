@@ -138,8 +138,8 @@
     }
 
   </style>
-  
-  <canvas id="cosmoscope-background" aria-hidden="true" hidden></canvas>
+  <canvas id="cosmoscope-background" aria-hidden="true"></canvas>
+  <!-- <canvas id="cosmoscope-background" aria-hidden="true" hidden></canvas> -->
   
   <div class="wrap">
     <header>
@@ -153,7 +153,8 @@
           <!-- <li><a href="tel:+447864750191">Phone</a></li> -->
           <!-- <li><a href="https://github.com/chelle0425" target="_blank" rel="noopener">GitHub</a></li> -->
           <li id="background-control" hidden>
-            <button type="button" aria-controls="cosmoscope-background">Show backdrop</button>
+            <button type="button" aria-controls="cosmoscope-background">Hide background</button>
+            <!-- <button type="button" aria-controls="cosmoscope-background">Show backdrop</button> -->
           </li>
         </ul>
         <div id="copy-note" class="sr" aria-live="polite" style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted);"></div>
@@ -376,12 +377,12 @@
     ];
     
     const hiddenLineFraction = 2/3;
-    let hiddenConnections = new Set();
-    // const hiddenConnections = new Set(connections
-    //   .map(connection => ({ connection, order: Math.random() }))
-    //   .sort((a, b) => a.order - b.order)
-    //   .slice(0, Math.round(connections.length * hiddenLineFraction))
-    //   .map(({ connection }) => connection));
+    // let hiddenConnections = new Set();
+    const hiddenConnections = new Set(connections
+      .map(connection => ({ connection, order: Math.random() }))
+      .sort((a, b) => a.order - b.order)
+      .slice(0, Math.round(connections.length * hiddenLineFraction))
+      .map(({ connection }) => connection));
 
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const sparkSpeed = 0.26;
