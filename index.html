@@ -378,7 +378,7 @@
     
     const hiddenLineFraction = 2/3;
     // let hiddenConnections = new Set();
-    const hiddenConnections = new Set(connections
+    let hiddenConnections = new Set(connections
       .map(connection => ({ connection, order: Math.random() }))
       .sort((a, b) => a.order - b.order)
       .slice(0, Math.round(connections.length * hiddenLineFraction))
